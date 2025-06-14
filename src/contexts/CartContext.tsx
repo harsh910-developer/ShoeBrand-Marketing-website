@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface CartItem {
@@ -21,6 +20,7 @@ interface CartContextType {
   getTotalPrice: () => number;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  isLoading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -28,19 +28,45 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage on mount with error handling
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      setItems(JSON.parse(savedCart));
-    }
+    const loadCart = () => {
+      try {
+        const savedCart = localStorage.getItem('stepstyle-cart');
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          // Validate cart structure
+          if (Array.isArray(parsedCart)) {
+            setItems(parsedCart);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading cart from localStorage:', error);
+        // Clear corrupted data
+        localStorage.removeItem('stepstyle-cart');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCart();
   }, []);
 
-  // Save cart to localStorage whenever items change
+  // Save cart to localStorage whenever items change with error handling
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(items));
-  }, [items]);
+    if (!isLoading) {
+      try {
+        localStorage.setItem('stepstyle-cart', JSON.stringify(items));
+        
+        // Also save timestamp for potential expiration
+        localStorage.setItem('stepstyle-cart-timestamp', Date.now().toString());
+      } catch (error) {
+        console.error('Error saving cart to localStorage:', error);
+      }
+    }
+  }, [items, isLoading]);
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {
@@ -103,7 +129,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       getTotalItems,
       getTotalPrice,
       isCartOpen,
-      setIsCartOpen
+      setIsCartOpen,
+      isLoading
     }}>
       {children}
     </CartContext.Provider>

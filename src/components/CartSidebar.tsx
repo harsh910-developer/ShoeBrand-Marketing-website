@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, Plus, Minus, X } from "lucide-react";
+import { ShoppingCart, Plus, Minus, X, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 const CartSidebar = () => {
@@ -13,7 +13,8 @@ const CartSidebar = () => {
     getTotalItems, 
     getTotalPrice,
     isCartOpen,
-    setIsCartOpen
+    setIsCartOpen,
+    isLoading
   } = useCart();
 
   const totalItems = getTotalItems();
@@ -50,7 +51,12 @@ const CartSidebar = () => {
         </SheetHeader>
         
         <div className="mt-6 space-y-4">
-          {items.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-8">
+              <Loader2 className="h-8 w-8 mx-auto text-gray-400 animate-spin mb-4" />
+              <p className="text-gray-500">Loading your cart...</p>
+            </div>
+          ) : items.length === 0 ? (
             <div className="text-center py-8">
               <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500">Your cart is empty</p>
