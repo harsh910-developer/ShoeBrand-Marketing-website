@@ -140,9 +140,7 @@ const ARTryOnModal = ({ isOpen, onClose, product }: ARTryOnModalProps) => {
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
                     <div className="w-48 h-32 border-2 border-dashed border-white rounded-lg bg-black/20 flex items-center justify-center">
-                      <Text fontSize="12" color="white">
-                        Position your feet here
-                      </Text>
+                      <span className="text-white text-sm">Position your feet here</span>
                     </div>
                   </div>
                 </div>
