@@ -13,7 +13,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-lg">S</span>
               </div>
-              <span className="text-2xl font-bold">StepStyle</span>
+              <span className="text-2xl font-bold">ShoeBrand</span>
             </Link>
             <p className="text-gray-400 mb-4">
               Premium branded shoes for the modern man. Quality, style, and comfort in every step.
@@ -66,7 +66,7 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
           <p className="text-gray-400">
-            © 2024 StepStyle. All rights reserved. | Crafted with ❤️ for shoe enthusiasts
+            © 2024 ShoeBrand. All rights reserved. | Crafted with ❤️ for shoe enthusiasts
           </p>
         </div>
       </div>
