@@ -10,6 +10,8 @@ import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ARTryOnModal from "@/components/ARTryOnModal";
+import ReviewSystem from "@/components/ReviewSystem";
+import EnhancedARTryOn from "@/components/EnhancedARTryOn";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -154,7 +156,7 @@ const ProductDetail = () => {
     setShowARModal(true);
     toast({
       title: "AR Try-On Loading",
-      description: "Preparing virtual try-on experience...",
+      description: "Preparing enhanced AR experience...",
     });
   };
 
@@ -343,6 +345,16 @@ const ProductDetail = () => {
           </div>
         </div>
 
+        {/* Reviews Section */}
+        <div className="mt-16">
+          <ReviewSystem 
+            productId={product.id}
+            productName={product.name}
+            averageRating={product.rating}
+            totalReviews={product.reviews}
+          />
+        </div>
+
         {/* Related Products */}
         <div className="mt-16">
           <h2 className="text-2xl font-bold mb-8">You May Also Like</h2>
@@ -379,11 +391,13 @@ const ProductDetail = () => {
 
       <Footer />
       
-      {/* AR Try-On Modal */}
-      <ARTryOnModal 
+      {/* Enhanced AR Try-On Modal */}
+      <EnhancedARTryOn 
         isOpen={showARModal}
         onClose={() => setShowARModal(false)}
-        product={product}
+        productId={product.id}
+        productName={product.name}
+        productImage={product.images[0]}
       />
     </div>
   );
