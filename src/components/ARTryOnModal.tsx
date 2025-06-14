@@ -2,8 +2,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Camera, X, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
 import { useARModal } from './ar-modal/useARModal';
-import ARCameraView from './ar-modal/ARCameraView';
+import EnhancedARCameraView from './ar-modal/EnhancedARCameraView';
 import ARControlPanel from './ar-modal/ARControlPanel';
 
 interface Product {
@@ -11,6 +12,7 @@ interface Product {
   name: string;
   images: string[];
   brand: string;
+  sizes?: number[];
 }
 
 interface ARTryOnModalProps {
@@ -39,14 +41,18 @@ const ARTryOnModal = ({ isOpen, onClose, product }: ARTryOnModalProps) => {
     onClose();
   };
 
+  // Default sizes if not provided
+  const availableSizes = product.sizes || [7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12];
+  const [selectedSize, setSelectedSize] = useState(9);
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-6xl h-[90vh] p-0">
+      <DialogContent className="max-w-7xl h-[95vh] p-0">
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2 text-xl">
               <Camera className="h-6 w-6 text-blue-500" />
-              AR Try-On: {product.name}
+              Enhanced AR Try-On: {product.name}
             </DialogTitle>
             <Button variant="ghost" size="sm" onClick={handleClose}>
               <X className="h-5 w-5" />
@@ -55,10 +61,10 @@ const ARTryOnModal = ({ isOpen, onClose, product }: ARTryOnModalProps) => {
         </DialogHeader>
 
         <div className="flex flex-col lg:flex-row gap-6 p-6 h-full">
-          {/* Main AR Display */}
+          {/* Enhanced AR Display */}
           <div className="flex-1 relative">
             {hasCamera ? (
-              <ARCameraView
+              <EnhancedARCameraView
                 isActive={isARActive}
                 videoRef={videoRef}
                 productImage={product.images[0]}
@@ -67,6 +73,9 @@ const ARTryOnModal = ({ isOpen, onClose, product }: ARTryOnModalProps) => {
                 onStopAR={stopAR}
                 onCapture={capturePhoto}
                 capturedImage={capturedImage}
+                availableSizes={availableSizes}
+                selectedSize={selectedSize}
+                onSizeChange={setSelectedSize}
               />
             ) : (
               <div className="flex flex-col items-center justify-center h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
@@ -74,7 +83,7 @@ const ARTryOnModal = ({ isOpen, onClose, product }: ARTryOnModalProps) => {
                 <h3 className="text-xl font-semibold text-gray-600 mb-2">Camera Not Available</h3>
                 <p className="text-gray-500 text-center max-w-md">
                   Your device doesn't support camera access or you haven't granted permission. 
-                  Please enable camera access to use the AR try-on feature.
+                  Please enable camera access to use the enhanced AR try-on feature.
                 </p>
               </div>
             )}
