@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus, Camera, Ruler, Compare } from "lucide-react";
+import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus, Camera, Ruler, GitCompare } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useComparison } from "@/contexts/ComparisonContext";
@@ -369,7 +369,7 @@ const ProductDetail = () => {
                   onClick={handleAddToComparison}
                   disabled={isInComparison(product.id)}
                 >
-                  <Compare className="h-5 w-5 mr-2" />
+                  <GitCompare className="h-5 w-5 mr-2" />
                   {isInComparison(product.id) ? 'In Comparison' : 'Compare'}
                 </Button>
               </div>

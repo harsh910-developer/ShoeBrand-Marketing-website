@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Compare, X } from "lucide-react";
+import { GitCompare, X } from "lucide-react";
 import { useComparison } from "@/contexts/ComparisonContext";
 
 const ComparisonBar = () => {
@@ -21,7 +21,7 @@ const ComparisonBar = () => {
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Compare className="h-5 w-5" />
+            <GitCompare className="h-5 w-5" />
             <span className="font-medium">Compare Products</span>
             <Badge variant="secondary">{comparisonProducts.length}/3</Badge>
           </div>

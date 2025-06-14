@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShoppingCart, Heart, Compare } from "lucide-react";
+import { Star, ShoppingCart, Heart, GitCompare } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSearch } from "@/contexts/SearchContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -305,7 +305,7 @@ const Products = () => {
                         onClick={(e) => handleComparisonToggle(product, e)}
                         disabled={isInComparison(product.id)}
                       >
-                        <Compare className={`h-4 w-4 ${isInComparison(product.id) ? 'text-purple-500' : 'text-gray-600'}`} />
+                        <GitCompare className={`h-4 w-4 ${isInComparison(product.id) ? 'text-purple-500' : 'text-gray-600'}`} />
                       </Button>
                     </div>
                     
