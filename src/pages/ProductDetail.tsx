@@ -162,7 +162,7 @@ const ProductDetail = () => {
     setShowARModal(true);
     toast({
       title: "AR Try-On Loading",
-      description: "Preparing enhanced AR experience...",
+      description: "Preparing your AR experience...",
     });
   };
 
@@ -353,7 +353,7 @@ const ProductDetail = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-blue-500 text-blue-500 hover:bg-blue-50"
+                  className="border-blue-500 text-blue-500 hover:bg-blue-50 hover:border-blue-600"
                   onClick={handleTryOn}
                 >
                   <Camera className="h-5 w-5 mr-2" />
@@ -444,13 +444,11 @@ const ProductDetail = () => {
 
       <Footer />
       
-      {/* Enhanced AR Try-On Modal */}
-      <EnhancedARTryOn 
+      {/* AR Try-On Modal */}
+      <ARTryOnModal 
         isOpen={showARModal}
         onClose={() => setShowARModal(false)}
-        productId={product.id}
-        productName={product.name}
-        productImage={product.images[0]}
+        product={product}
       />
 
       {/* Size Guide Modal */}
