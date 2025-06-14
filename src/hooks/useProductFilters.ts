@@ -53,13 +53,31 @@ export const useProductFilters = (products: Product[]) => {
     }));
   };
 
-  const toggleArrayFilter = (key: 'categories' | 'brands' | 'sizes', value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: prev[key].includes(value)
-        ? prev[key].filter(item => item !== value)
-        : [...prev[key], value]
-    }));
+  const toggleArrayFilter = (key: 'categories' | 'brands', value: string): void;
+  const toggleArrayFilter = (key: 'sizes', value: number): void;
+  const toggleArrayFilter = (key: 'categories' | 'brands' | 'sizes', value: string | number) => {
+    setFilters(prev => {
+      if (key === 'categories' || key === 'brands') {
+        const currentArray = prev[key] as string[];
+        const stringValue = value as string;
+        return {
+          ...prev,
+          [key]: currentArray.includes(stringValue)
+            ? currentArray.filter(item => item !== stringValue)
+            : [...currentArray, stringValue]
+        };
+      } else if (key === 'sizes') {
+        const currentArray = prev[key] as number[];
+        const numberValue = value as number;
+        return {
+          ...prev,
+          [key]: currentArray.includes(numberValue)
+            ? currentArray.filter(item => item !== numberValue)
+            : [...currentArray, numberValue]
+        };
+      }
+      return prev;
+    });
   };
 
   const clearFilters = () => {
