@@ -1,3 +1,4 @@
+
 import { useMemo, useState } from 'react';
 import { Product } from './useProductFilter';
 
@@ -57,13 +58,26 @@ export const useProductFilters = (products: Product[]) => {
     value: T extends 'sizes' ? number : string
   ) => {
     setFilters(prev => {
-      const currentArray = prev[key] as any[];
-      return {
-        ...prev,
-        [key]: currentArray.includes(value)
-          ? currentArray.filter(item => item !== value)
-          : [...currentArray, value]
-      };
+      if (key === 'categories' || key === 'brands') {
+        const currentArray = prev[key] as string[];
+        const stringValue = value as string;
+        return {
+          ...prev,
+          [key]: currentArray.includes(stringValue)
+            ? currentArray.filter(item => item !== stringValue)
+            : [...currentArray, stringValue]
+        };
+      } else if (key === 'sizes') {
+        const currentArray = prev[key] as number[];
+        const numberValue = value as number;
+        return {
+          ...prev,
+          [key]: currentArray.includes(numberValue)
+            ? currentArray.filter(item => item !== numberValue)
+            : [...currentArray, numberValue]
+        };
+      }
+      return prev;
     });
   };
 
@@ -77,7 +91,10 @@ export const useProductFilters = (products: Product[]) => {
   };
 
   return {
-    filters,
+    filters: {
+      ...filters,
+      priceRange: filters.priceRange === '' ? 'all' : filters.priceRange
+    },
     filteredProducts,
     updateFilter,
     toggleArrayFilter,

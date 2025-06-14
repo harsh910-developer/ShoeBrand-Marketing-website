@@ -74,12 +74,12 @@ const ProductFilters = ({
       {/* Price Range Filter */}
       <div className="mb-6">
         <h4 className="font-medium mb-3">Price Range</h4>
-        <Select value={filters.priceRange} onValueChange={(value) => onUpdateFilter('priceRange', value)}>
+        <Select value={filters.priceRange} onValueChange={(value) => onUpdateFilter('priceRange', value === 'all' ? '' : value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select price range" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Prices</SelectItem>
+            <SelectItem value="all">All Prices</SelectItem>
             <SelectItem value="0-100">$0 - $100</SelectItem>
             <SelectItem value="100-200">$100 - $200</SelectItem>
             <SelectItem value="200-300">$200 - $300</SelectItem>
