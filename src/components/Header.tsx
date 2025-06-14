@@ -1,11 +1,14 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Menu, X, Search } from "lucide-react";
+import { useSearch } from "@/contexts/SearchContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { searchQuery, setSearchQuery } = useSearch();
+  const navigate = useNavigate();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -14,6 +17,17 @@ const Header = () => {
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate('/products');
+    }
+  };
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -41,16 +55,18 @@ const Header = () => {
           </nav>
 
           {/* Search Bar */}
-          <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
+          <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <input
                 type="text"
                 placeholder="Search shoes..."
+                value={searchQuery}
+                onChange={handleSearchInputChange}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               />
               <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
             </div>
-          </div>
+          </form>
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
@@ -81,16 +97,18 @@ const Header = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t">
-            <div className="mb-4">
+            <form onSubmit={handleSearch} className="mb-4">
               <div className="relative">
                 <input
                   type="text"
                   placeholder="Search shoes..."
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
                 <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
-            </div>
+            </form>
             <nav className="flex flex-col space-y-2">
               {navigation.map((item) => (
                 <Link

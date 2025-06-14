@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,10 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Star, ShoppingCart, Heart, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useSearch } from "@/contexts/SearchContext";
+import { useProductFilter, Product } from "@/hooks/useProductFilter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Products = () => {
+  const { searchQuery } = useSearch();
   const [selectedFilters, setSelectedFilters] = useState({
     category: [],
     priceRange: "",
@@ -19,7 +21,7 @@ const Products = () => {
     color: []
   });
 
-  const products = [
+  const products: Product[] = [
     {
       id: 1,
       name: "Premium Sport Sneakers",
@@ -108,6 +110,8 @@ const Products = () => {
     }
   ];
 
+  const filteredProducts = useProductFilter(products, searchQuery);
+
   const categories = [
     { id: "sneakers", label: "Sneakers" },
     { id: "formal", label: "Formal Shoes" },
@@ -125,13 +129,21 @@ const Products = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">All Products</h1>
-          <p className="text-gray-600">Discover our complete collection of premium men's shoes</p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            {searchQuery ? `Search Results for "${searchQuery}"` : "All Products"}
+          </h1>
+          <p className="text-gray-600">
+            {searchQuery 
+              ? `Found ${filteredProducts.length} products matching your search`
+              : "Discover our complete collection of premium men's shoes"
+            }
+          </p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 space-y-6">
+            {/* ... keep existing code (filters sidebar) */}
             <div className="bg-white p-6 rounded-lg border">
               <h3 className="text-lg font-semibold mb-4 flex items-center">
                 <Filter className="h-5 w-5 mr-2" />
@@ -202,7 +214,7 @@ const Products = () => {
           <div className="flex-1">
             {/* Sort and View Options */}
             <div className="flex justify-between items-center mb-6">
-              <p className="text-gray-600">{products.length} products found</p>
+              <p className="text-gray-600">{filteredProducts.length} products found</p>
               <Select defaultValue="popularity">
                 <SelectTrigger className="w-48">
                   <SelectValue />
@@ -218,68 +230,77 @@ const Products = () => {
             </div>
 
             {/* Products Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300">
-                  <Link to={`/product/${product.id}`}>
-                    <div className="relative overflow-hidden">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {product.isNew && (
-                        <Badge className="absolute top-2 left-2 bg-green-500">NEW</Badge>
-                      )}
-                      {product.isSale && (
-                        <Badge className="absolute top-2 right-2 bg-red-500">SALE</Badge>
-                      )}
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No products found matching your search.</p>
+                <p className="text-gray-400 mt-2">Try adjusting your search terms or filters.</p>
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProducts.map((product) => (
+                  <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300">
+                    <Link to={`/product/${product.id}`}>
+                      <div className="relative overflow-hidden">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {product.isNew && (
+                          <Badge className="absolute top-2 left-2 bg-green-500">NEW</Badge>
+                        )}
+                        {product.isSale && (
+                          <Badge className="absolute top-2 right-2 bg-red-500">SALE</Badge>
+                        )}
+                      </div>
+                      <CardContent className="p-4">
+                        <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
+                        <h3 className="font-semibold text-lg mb-2 group-hover:text-red-500 transition-colors">
+                          {product.name}
+                        </h3>
+                        <div className="flex items-center mb-2">
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            <span className="ml-1 text-sm text-gray-600">{product.rating}</span>
+                            <span className="ml-1 text-sm text-gray-500">({product.reviews})</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl font-bold text-red-500">${product.price}</span>
+                            {product.originalPrice && (
+                              <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <p className="text-xs text-gray-500">Available sizes: {product.sizes.join(", ")}</p>
+                        </div>
+                      </CardContent>
+                    </Link>
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <Button size="sm" variant="secondary" className="p-2" onClick={(e) => e.preventDefault()}>
+                        <Heart className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <CardContent className="p-4">
-                      <p className="text-sm text-gray-500 mb-1">{product.brand}</p>
-                      <h3 className="font-semibold text-lg mb-2 group-hover:text-red-500 transition-colors">
-                        {product.name}
-                      </h3>
-                      <div className="flex items-center mb-2">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="ml-1 text-sm text-gray-600">{product.rating}</span>
-                          <span className="ml-1 text-sm text-gray-500">({product.reviews})</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xl font-bold text-red-500">${product.price}</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="mt-3">
-                        <p className="text-xs text-gray-500">Available sizes: {product.sizes.join(", ")}</p>
-                      </div>
-                    </CardContent>
-                  </Link>
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button size="sm" variant="secondary" className="p-2" onClick={(e) => e.preventDefault()}>
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button size="sm" className="bg-red-500 hover:bg-red-600" onClick={(e) => e.preventDefault()}>
-                      <ShoppingCart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <Button size="sm" className="bg-red-500 hover:bg-red-600" onClick={(e) => e.preventDefault()}>
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
 
             {/* Load More Button */}
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
-                Load More Products
-              </Button>
-            </div>
+            {filteredProducts.length > 0 && (
+              <div className="text-center mt-12">
+                <Button variant="outline" size="lg" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+                  Load More Products
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
