@@ -4,11 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Menu, X, Search } from "lucide-react";
 import { useSearch } from "@/contexts/SearchContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import CartSidebar from "./CartSidebar";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
+  const { wishlistCount } = useWishlist();
   const navigate = useNavigate();
 
   const navigation = [
@@ -71,10 +73,17 @@ const Header = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
-              <Heart className="h-5 w-5" />
-              <span className="ml-1 hidden lg:inline">Wishlist</span>
-            </Button>
+            <Link to="/wishlist">
+              <Button variant="ghost" size="sm" className="hidden sm:flex relative">
+                <Heart className="h-5 w-5" />
+                <span className="ml-1 hidden lg:inline">Wishlist</span>
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
             <CartSidebar />
 
             {/* Mobile menu button */}
@@ -115,6 +124,14 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              <Link
+                to="/wishlist"
+                className="text-gray-700 hover:text-red-500 font-medium py-2 transition-colors flex items-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Heart className="h-5 w-5 mr-2" />
+                Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
+              </Link>
             </nav>
           </div>
         )}

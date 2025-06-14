@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, ShoppingCart, Heart } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSearch } from "@/contexts/SearchContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { useProductFilter, Product } from "@/hooks/useProductFilter";
 import { useProductFilters } from "@/hooks/useProductFilters";
 import ProductFilters from "@/components/ProductFilters";
@@ -14,6 +15,7 @@ import Footer from "@/components/Footer";
 
 const Products = () => {
   const { searchQuery } = useSearch();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const products: Product[] = [
     {
@@ -114,6 +116,28 @@ const Products = () => {
     clearFilters 
   } = useProductFilters(searchFilteredProducts);
 
+  const handleWishlistToggle = (product: Product, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const wishlistItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      brand: product.brand,
+      rating: product.rating,
+      reviews: product.reviews,
+    };
+
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(wishlistItem);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -178,7 +202,7 @@ const Products = () => {
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
-                  <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300">
+                  <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300 relative">
                     <Link to={`/product/${product.id}`}>
                       <div className="relative overflow-hidden">
                         <img 
@@ -218,11 +242,22 @@ const Products = () => {
                         </div>
                       </CardContent>
                     </Link>
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <Button size="sm" variant="secondary" className="p-2" onClick={(e) => e.preventDefault()}>
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    
+                    {/* Wishlist Button */}
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className={`absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                        isInWishlist(product.id) 
+                          ? 'bg-red-100 hover:bg-red-200' 
+                          : 'bg-white/90 hover:bg-white'
+                      }`}
+                      onClick={(e) => handleWishlistToggle(product, e)}
+                    >
+                      <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                    </Button>
+                    
+                    {/* Quick Add to Cart Button */}
                     <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <Button size="sm" className="bg-red-500 hover:bg-red-600" onClick={(e) => e.preventDefault()}>
                         <ShoppingCart className="h-4 w-4" />

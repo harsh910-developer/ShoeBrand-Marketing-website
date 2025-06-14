@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus, Camera } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -18,6 +18,7 @@ const ProductDetail = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [showARModal, setShowARModal] = useState(false);
   const { addToCart, setIsCartOpen } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   // Mock product data - in a real app, this would come from an API
   const products = [
@@ -128,6 +129,25 @@ const ProductDetail = () => {
     });
 
     setIsCartOpen(true);
+  };
+
+  const handleWishlistToggle = () => {
+    const wishlistItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.images[0],
+      brand: product.brand,
+      rating: product.rating,
+      reviews: product.reviews,
+    };
+
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(wishlistItem);
+    }
   };
 
   const handleTryOn = () => {
@@ -299,9 +319,17 @@ const ProductDetail = () => {
                 Try-On with AR
               </Button>
               
-              <Button variant="outline" size="lg" className="w-full">
-                <Heart className="h-5 w-5 mr-2" />
-                Add to Wishlist
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className={`w-full ${isInWishlist(product.id) 
+                  ? 'border-red-500 text-red-500 bg-red-50' 
+                  : 'border-gray-300'
+                }`}
+                onClick={handleWishlistToggle}
+              >
+                <Heart className={`h-5 w-5 mr-2 ${isInWishlist(product.id) ? 'fill-red-500' : ''}`} />
+                {isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
               </Button>
             </div>
 
