@@ -20,7 +20,6 @@ const Products = () => {
   const { searchQuery } = useSearch();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { addToComparison, isInComparison, setIsComparisonOpen, isComparisonOpen } = useComparison();
-  const [showComparison, setShowComparison] = useState(false);
 
   const products: Product[] = [
     {
@@ -336,8 +335,8 @@ const Products = () => {
 
       {/* Product Comparison Modal */}
       <ProductComparison 
-        isOpen={showComparison}
-        onClose={() => setShowComparison(false)}
+        isOpen={isComparisonOpen}
+        onClose={() => setIsComparisonOpen(false)}
       />
     </div>
   );
