@@ -13,7 +13,23 @@ export interface ComparisonProduct {
   category: string;
   sizes: number[];
   colors: string[];
+  // Enhanced metrics
+  material?: string;
+  durability?: number; // 1-10 scale
+  comfort?: number; // 1-10 scale
+  style?: string;
+  waterproof?: boolean;
+  weight?: number; // in grams
 }
+
+export interface SavedComparison {
+  id: string;
+  name: string;
+  products: ComparisonProduct[];
+  createdAt: Date;
+}
+
+export type ComparisonView = 'cards' | 'table' | 'detailed';
 
 interface ComparisonContextType {
   comparisonProducts: ComparisonProduct[];
@@ -23,6 +39,17 @@ interface ComparisonContextType {
   isInComparison: (productId: number) => boolean;
   isComparisonOpen: boolean;
   setIsComparisonOpen: (open: boolean) => void;
+  
+  // New features
+  currentView: ComparisonView;
+  setCurrentView: (view: ComparisonView) => void;
+  savedComparisons: SavedComparison[];
+  saveComparison: (name: string) => void;
+  loadComparison: (comparison: SavedComparison) => void;
+  deleteSavedComparison: (id: string) => void;
+  generateShareLink: () => string;
+  comparisonHistory: ComparisonProduct[][];
+  addToHistory: () => void;
 }
 
 const ComparisonContext = createContext<ComparisonContextType | undefined>(undefined);
@@ -30,6 +57,9 @@ const ComparisonContext = createContext<ComparisonContextType | undefined>(undef
 export const ComparisonProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [comparisonProducts, setComparisonProducts] = useState<ComparisonProduct[]>([]);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<ComparisonView>('cards');
+  const [savedComparisons, setSavedComparisons] = useState<SavedComparison[]>([]);
+  const [comparisonHistory, setComparisonHistory] = useState<ComparisonProduct[][]>([]);
 
   const addToComparison = (product: ComparisonProduct) => {
     setComparisonProducts(prev => {
@@ -48,11 +78,43 @@ export const ComparisonProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const clearComparison = () => {
+    if (comparisonProducts.length > 0) {
+      addToHistory();
+    }
     setComparisonProducts([]);
   };
 
   const isInComparison = (productId: number) => {
     return comparisonProducts.some(p => p.id === productId);
+  };
+
+  const saveComparison = (name: string) => {
+    const newComparison: SavedComparison = {
+      id: Date.now().toString(),
+      name,
+      products: [...comparisonProducts],
+      createdAt: new Date()
+    };
+    setSavedComparisons(prev => [...prev, newComparison]);
+  };
+
+  const loadComparison = (comparison: SavedComparison) => {
+    setComparisonProducts(comparison.products);
+  };
+
+  const deleteSavedComparison = (id: string) => {
+    setSavedComparisons(prev => prev.filter(c => c.id !== id));
+  };
+
+  const generateShareLink = () => {
+    const productIds = comparisonProducts.map(p => p.id).join(',');
+    return `${window.location.origin}/compare?products=${productIds}`;
+  };
+
+  const addToHistory = () => {
+    if (comparisonProducts.length > 0) {
+      setComparisonHistory(prev => [comparisonProducts, ...prev.slice(0, 9)]); // Keep last 10
+    }
   };
 
   return (
@@ -64,6 +126,15 @@ export const ComparisonProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       isInComparison,
       isComparisonOpen,
       setIsComparisonOpen,
+      currentView,
+      setCurrentView,
+      savedComparisons,
+      saveComparison,
+      loadComparison,
+      deleteSavedComparison,
+      generateShareLink,
+      comparisonHistory,
+      addToHistory,
     }}>
       {children}
     </ComparisonContext.Provider>
