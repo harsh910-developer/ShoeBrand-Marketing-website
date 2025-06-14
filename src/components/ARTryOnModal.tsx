@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, Text, Box } from '@react-three/drei';
+import { OrbitControls, Environment } from '@react-three/drei';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,24 +26,28 @@ function Shoe3D({ color = "#8B4513" }: { color?: string }) {
   return (
     <group position={[0, -0.5, 0]} rotation={[0, Math.PI / 4, 0]}>
       {/* Shoe sole */}
-      <Box args={[2.5, 0.3, 1]} position={[0, -0.15, 0]}>
+      <mesh position={[0, -0.15, 0]}>
+        <boxGeometry args={[2.5, 0.3, 1]} />
         <meshStandardMaterial color="#2F2F2F" />
-      </Box>
+      </mesh>
       
       {/* Shoe upper */}
-      <Box args={[2.2, 1.2, 0.8]} position={[0.2, 0.4, 0]}>
+      <mesh position={[0.2, 0.4, 0]}>
+        <boxGeometry args={[2.2, 1.2, 0.8]} />
         <meshStandardMaterial color={color} />
-      </Box>
+      </mesh>
       
       {/* Shoe tongue */}
-      <Box args={[0.6, 0.8, 0.1]} position={[-0.8, 0.3, 0]}>
+      <mesh position={[-0.8, 0.3, 0]}>
+        <boxGeometry args={[0.6, 0.8, 0.1]} />
         <meshStandardMaterial color={color} />
-      </Box>
+      </mesh>
       
       {/* Laces */}
-      <Box args={[0.1, 0.1, 0.9]} position={[-0.8, 0.6, 0]}>
+      <mesh position={[-0.8, 0.6, 0]}>
+        <boxGeometry args={[0.1, 0.1, 0.9]} />
         <meshStandardMaterial color="white" />
-      </Box>
+      </mesh>
     </group>
   );
 }
