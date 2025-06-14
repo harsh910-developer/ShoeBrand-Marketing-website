@@ -1,10 +1,11 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -13,6 +14,7 @@ const ProductDetail = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { addToCart, setIsCartOpen } = useCart();
 
   // Mock product data - in a real app, this would come from an API
   const products = [
@@ -94,6 +96,35 @@ const ProductDetail = () => {
     if (newQuantity >= 1 && newQuantity <= 10) {
       setQuantity(newQuantity);
     }
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      toast({
+        title: "Please select a size",
+        description: "You need to select a size before adding to cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        size: selectedSize,
+        brand: product.brand,
+      });
+    }
+
+    toast({
+      title: "Added to cart!",
+      description: `${quantity} ${product.name} (Size ${selectedSize}) added to your cart.`,
+    });
+
+    setIsCartOpen(true);
   };
 
   return (
@@ -241,6 +272,7 @@ const ProductDetail = () => {
                 size="lg" 
                 className="w-full bg-red-500 hover:bg-red-600"
                 disabled={!selectedSize || !product.inStock}
+                onClick={handleAddToCart}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart - ${(product.price * quantity).toFixed(2)}

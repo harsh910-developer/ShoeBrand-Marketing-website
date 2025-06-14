@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Heart, Menu, X, Search } from "lucide-react";
+import { Heart, Menu, X, Search } from "lucide-react";
 import { useSearch } from "@/contexts/SearchContext";
+import CartSidebar from "./CartSidebar";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,13 +75,7 @@ const Header = () => {
               <Heart className="h-5 w-5" />
               <span className="ml-1 hidden lg:inline">Wishlist</span>
             </Button>
-            <Button variant="ghost" size="sm" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="ml-1 hidden lg:inline">Cart</span>
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </Button>
+            <CartSidebar />
 
             {/* Mobile menu button */}
             <Button
