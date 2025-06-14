@@ -3,23 +3,17 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShoppingCart, Heart, Filter } from "lucide-react";
+import { Star, ShoppingCart, Heart } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useSearch } from "@/contexts/SearchContext";
 import { useProductFilter, Product } from "@/hooks/useProductFilter";
+import { useProductFilters } from "@/hooks/useProductFilters";
+import ProductFilters from "@/components/ProductFilters";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const Products = () => {
   const { searchQuery } = useSearch();
-  const [selectedFilters, setSelectedFilters] = useState({
-    category: [],
-    priceRange: "",
-    size: [],
-    brand: [],
-    color: []
-  });
 
   const products: Product[] = [
     {
@@ -110,17 +104,15 @@ const Products = () => {
     }
   ];
 
-  const filteredProducts = useProductFilter(products, searchQuery);
-
-  const categories = [
-    { id: "sneakers", label: "Sneakers" },
-    { id: "formal", label: "Formal Shoes" },
-    { id: "casual", label: "Casual Shoes" }
-  ];
-
-  const brands = ["StepStyle", "StepStyle Pro", "StepStyle Elite"];
-  const sizes = [7, 8, 9, 10, 11, 12, 13];
-  const colors = ["Black", "White", "Brown", "Red", "Blue", "Navy", "Gray"];
+  // First apply search filter, then apply other filters
+  const searchFilteredProducts = useProductFilter(products, searchQuery);
+  const { 
+    filters, 
+    filteredProducts, 
+    updateFilter, 
+    toggleArrayFilter, 
+    clearFilters 
+  } = useProductFilters(searchFilteredProducts);
 
   return (
     <div className="min-h-screen bg-white">
@@ -143,71 +135,12 @@ const Products = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
           <div className="lg:w-64 space-y-6">
-            {/* ... keep existing code (filters sidebar) */}
-            <div className="bg-white p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-                <Filter className="h-5 w-5 mr-2" />
-                Filters
-              </h3>
-              
-              {/* Category Filter */}
-              <div className="mb-6">
-                <h4 className="font-medium mb-3">Category</h4>
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <div key={category.id} className="flex items-center space-x-2">
-                      <Checkbox id={category.id} />
-                      <label htmlFor={category.id} className="text-sm cursor-pointer">
-                        {category.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Range Filter */}
-              <div className="mb-6">
-                <h4 className="font-medium mb-3">Price Range</h4>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select price range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0-100">$0 - $100</SelectItem>
-                    <SelectItem value="100-200">$100 - $200</SelectItem>
-                    <SelectItem value="200-300">$200 - $300</SelectItem>
-                    <SelectItem value="300+">$300+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Brand Filter */}
-              <div className="mb-6">
-                <h4 className="font-medium mb-3">Brand</h4>
-                <div className="space-y-2">
-                  {brands.map((brand) => (
-                    <div key={brand} className="flex items-center space-x-2">
-                      <Checkbox id={brand} />
-                      <label htmlFor={brand} className="text-sm cursor-pointer">
-                        {brand}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Size Filter */}
-              <div className="mb-6">
-                <h4 className="font-medium mb-3">Size</h4>
-                <div className="grid grid-cols-3 gap-2">
-                  {sizes.map((size) => (
-                    <Button key={size} variant="outline" size="sm" className="h-8">
-                      {size}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ProductFilters
+              filters={filters}
+              onUpdateFilter={updateFilter}
+              onToggleArrayFilter={toggleArrayFilter}
+              onClearFilters={clearFilters}
+            />
           </div>
 
           {/* Products Grid */}
@@ -232,8 +165,15 @@ const Products = () => {
             {/* Products Grid */}
             {filteredProducts.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No products found matching your search.</p>
+                <p className="text-gray-500 text-lg">No products found matching your filters.</p>
                 <p className="text-gray-400 mt-2">Try adjusting your search terms or filters.</p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4" 
+                  onClick={clearFilters}
+                >
+                  Clear All Filters
+                </Button>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
