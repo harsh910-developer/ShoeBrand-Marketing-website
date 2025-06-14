@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +7,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import FeaturedCarousel from "@/components/FeaturedCarousel";
+import PersonalizedRecommendations from "@/components/PersonalizedRecommendations";
+import ARTryOnPromotion from "@/components/ARTryOnPromotion";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
@@ -202,6 +203,16 @@ const Index = () => {
           <FeaturedCarousel products={featuredProducts} />
         </div>
       </section>
+
+      {/* AR Try-On Promotion */}
+      <ARTryOnPromotion />
+
+      {/* Personalized Recommendations */}
+      <PersonalizedRecommendations 
+        browsedCategories={["sneakers", "athletic", "casual"]}
+        title="Just For You"
+        subtitle="AI-powered recommendations based on your style preferences"
+      />
 
       {/* Categories Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-white to-gray-50">
