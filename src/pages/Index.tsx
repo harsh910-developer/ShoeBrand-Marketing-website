@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -136,51 +135,55 @@ const Index = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
               <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-all duration-300">
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {product.isNew && (
-                    <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs font-semibold rounded">
-                      NEW
-                    </span>
-                  )}
-                  {product.isSale && (
-                    <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
-                      SALE
-                    </span>
-                  )}
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button size="sm" variant="secondary" className="p-2">
-                      <Heart className="h-4 w-4" />
-                    </Button>
+                <Link to={`/product/${product.id}`}>
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={product.image} 
+                      alt={product.name}
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {product.isNew && (
+                      <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs font-semibold rounded">
+                        NEW
+                      </span>
+                    )}
+                    {product.isSale && (
+                      <span className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
+                        SALE
+                      </span>
+                    )}
                   </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-lg mb-2 group-hover:text-red-500 transition-colors">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center mb-2">
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="ml-1 text-sm text-gray-600">{product.rating}</span>
+                        <span className="ml-1 text-sm text-gray-500">({product.reviews})</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl font-bold text-red-500">${product.price}</span>
+                        {product.originalPrice && (
+                          <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Link>
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Button size="sm" variant="secondary" className="p-2" onClick={(e) => e.preventDefault()}>
+                    <Heart className="h-4 w-4" />
+                  </Button>
                 </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-lg mb-2 group-hover:text-red-500 transition-colors">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center mb-2">
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="ml-1 text-sm text-gray-600">{product.rating}</span>
-                      <span className="ml-1 text-sm text-gray-500">({product.reviews})</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-red-500">${product.price}</span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">${product.originalPrice}</span>
-                      )}
-                    </div>
-                    <Button size="sm" className="bg-red-500 hover:bg-red-600">
-                      <ShoppingCart className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
+                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Button size="sm" className="bg-red-500 hover:bg-red-600" onClick={(e) => e.preventDefault()}>
+                    <ShoppingCart className="h-4 w-4" />
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>
