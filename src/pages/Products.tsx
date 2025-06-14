@@ -3,19 +3,24 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShoppingCart, Heart } from "lucide-react";
+import { Star, ShoppingCart, Heart, Compare } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSearch } from "@/contexts/SearchContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useComparison } from "@/contexts/ComparisonContext";
 import { useProductFilter, Product } from "@/hooks/useProductFilter";
 import { useProductFilters } from "@/hooks/useProductFilters";
 import ProductFilters from "@/components/ProductFilters";
+import ProductComparison from "@/components/ProductComparison";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { toast } from "@/hooks/use-toast";
 
 const Products = () => {
   const { searchQuery } = useSearch();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToComparison, isInComparison, setIsComparisonOpen, isComparisonOpen } = useComparison();
+  const [showComparison, setShowComparison] = useState(false);
 
   const products: Product[] = [
     {
@@ -138,6 +143,35 @@ const Products = () => {
     }
   };
 
+  const handleComparisonToggle = (product: Product, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isInComparison(product.id)) {
+      return; // Already in comparison
+    }
+
+    const comparisonProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image,
+      rating: product.rating,
+      reviews: product.reviews,
+      brand: product.brand,
+      category: product.category,
+      sizes: product.sizes,
+      colors: product.colors,
+    };
+
+    addToComparison(comparisonProduct);
+    toast({
+      title: "Added to comparison",
+      description: `${product.name} has been added to comparison.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -243,19 +277,37 @@ const Products = () => {
                       </CardContent>
                     </Link>
                     
-                    {/* Wishlist Button */}
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className={`absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                        isInWishlist(product.id) 
-                          ? 'bg-red-100 hover:bg-red-200' 
-                          : 'bg-white/90 hover:bg-white'
-                      }`}
-                      onClick={(e) => handleWishlistToggle(product, e)}
-                    >
-                      <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                    </Button>
+                    {/* Action Buttons */}
+                    <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      {/* Wishlist Button */}
+                      <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className={`p-2 ${
+                          isInWishlist(product.id) 
+                            ? 'bg-red-100 hover:bg-red-200' 
+                            : 'bg-white/90 hover:bg-white'
+                        }`}
+                        onClick={(e) => handleWishlistToggle(product, e)}
+                      >
+                        <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                      </Button>
+                      
+                      {/* Comparison Button */}
+                      <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        className={`p-2 ${
+                          isInComparison(product.id) 
+                            ? 'bg-purple-100 hover:bg-purple-200' 
+                            : 'bg-white/90 hover:bg-white'
+                        }`}
+                        onClick={(e) => handleComparisonToggle(product, e)}
+                        disabled={isInComparison(product.id)}
+                      >
+                        <Compare className={`h-4 w-4 ${isInComparison(product.id) ? 'text-purple-500' : 'text-gray-600'}`} />
+                      </Button>
+                    </div>
                     
                     {/* Quick Add to Cart Button */}
                     <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -281,6 +333,12 @@ const Products = () => {
       </div>
 
       <Footer />
+
+      {/* Product Comparison Modal */}
+      <ProductComparison 
+        isOpen={showComparison}
+        onClose={() => setShowComparison(false)}
+      />
     </div>
   );
 };

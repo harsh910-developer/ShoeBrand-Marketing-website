@@ -3,15 +3,18 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus, Camera } from "lucide-react";
+import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus, Camera, Ruler, Compare } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useComparison } from "@/contexts/ComparisonContext";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ARTryOnModal from "@/components/ARTryOnModal";
 import ReviewSystem from "@/components/ReviewSystem";
 import EnhancedARTryOn from "@/components/EnhancedARTryOn";
+import SizeGuide from "@/components/SizeGuide";
+import ProductComparison from "@/components/ProductComparison";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -19,8 +22,11 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [showARModal, setShowARModal] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
   const { addToCart, setIsCartOpen } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToComparison, isInComparison } = useComparison();
 
   // Mock product data - in a real app, this would come from an API
   const products = [
@@ -160,6 +166,28 @@ const ProductDetail = () => {
     });
   };
 
+  const handleAddToComparison = () => {
+    const comparisonProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.images[0],
+      rating: product.rating,
+      reviews: product.reviews,
+      brand: product.brand,
+      category: product.category,
+      sizes: product.sizes,
+      colors: product.colors,
+    };
+
+    addToComparison(comparisonProduct);
+    toast({
+      title: "Added to comparison",
+      description: `${product.name} has been added to comparison.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -258,7 +286,18 @@ const ProductDetail = () => {
 
             {/* Size Selection */}
             <div>
-              <h3 className="text-lg font-semibold mb-3">Size</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-semibold">Size</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowSizeGuide(true)}
+                  className="text-red-500 hover:text-red-600"
+                >
+                  <Ruler className="h-4 w-4 mr-1" />
+                  Size Guide
+                </Button>
+              </div>
               <div className="flex gap-2 mb-4">
                 {product.sizes.map((size) => (
                   <Button
@@ -272,7 +311,6 @@ const ProductDetail = () => {
                   </Button>
                 ))}
               </div>
-              <Link to="#" className="text-sm text-red-500 hover:underline">Size Guide</Link>
             </div>
 
             {/* Quantity */}
@@ -311,15 +349,30 @@ const ProductDetail = () => {
                 Add to Cart - ${(product.price * quantity).toFixed(2)}
               </Button>
               
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
-                onClick={handleTryOn}
-              >
-                <Camera className="h-5 w-5 mr-2" />
-                Try-On with AR
-              </Button>
+              <div className="grid grid-cols-2 gap-3">
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-blue-500 text-blue-500 hover:bg-blue-50"
+                  onClick={handleTryOn}
+                >
+                  <Camera className="h-5 w-5 mr-2" />
+                  Try-On with AR
+                </Button>
+                
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className={`border-purple-500 text-purple-500 hover:bg-purple-50 ${
+                    isInComparison(product.id) ? 'bg-purple-50' : ''
+                  }`}
+                  onClick={handleAddToComparison}
+                  disabled={isInComparison(product.id)}
+                >
+                  <Compare className="h-5 w-5 mr-2" />
+                  {isInComparison(product.id) ? 'In Comparison' : 'Compare'}
+                </Button>
+              </div>
               
               <Button 
                 variant="outline" 
@@ -398,6 +451,18 @@ const ProductDetail = () => {
         productId={product.id}
         productName={product.name}
         productImage={product.images[0]}
+      />
+
+      {/* Size Guide Modal */}
+      <SizeGuide 
+        isOpen={showSizeGuide}
+        onClose={() => setShowSizeGuide(false)}
+      />
+
+      {/* Product Comparison Modal */}
+      <ProductComparison 
+        isOpen={showComparison}
+        onClose={() => setShowComparison(false)}
       />
     </div>
   );
