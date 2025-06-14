@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
   const { wishlistCount } = useWishlist();
-  const { cartItems } = useCart();
+  const { items } = useCart();
   const navigate = useNavigate();
 
   const navigation = [
@@ -35,7 +34,7 @@ const Header = () => {
     setSearchQuery(e.target.value);
   };
 
-  const cartItemsCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartItemsCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-100">
