@@ -1,19 +1,22 @@
+
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus } from "lucide-react";
+import { Star, ShoppingCart, Heart, ArrowLeft, Plus, Minus, Camera } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ARTryOnModal from "@/components/ARTryOnModal";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [showARModal, setShowARModal] = useState(false);
   const { addToCart, setIsCartOpen } = useCart();
 
   // Mock product data - in a real app, this would come from an API
@@ -125,6 +128,14 @@ const ProductDetail = () => {
     });
 
     setIsCartOpen(true);
+  };
+
+  const handleTryOn = () => {
+    setShowARModal(true);
+    toast({
+      title: "AR Try-On Loading",
+      description: "Preparing virtual try-on experience...",
+    });
   };
 
   return (
@@ -277,6 +288,17 @@ const ProductDetail = () => {
                 <ShoppingCart className="h-5 w-5 mr-2" />
                 Add to Cart - ${(product.price * quantity).toFixed(2)}
               </Button>
+              
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full border-blue-500 text-blue-500 hover:bg-blue-50"
+                onClick={handleTryOn}
+              >
+                <Camera className="h-5 w-5 mr-2" />
+                Try-On with AR
+              </Button>
+              
               <Button variant="outline" size="lg" className="w-full">
                 <Heart className="h-5 w-5 mr-2" />
                 Add to Wishlist
@@ -328,6 +350,13 @@ const ProductDetail = () => {
       </div>
 
       <Footer />
+      
+      {/* AR Try-On Modal */}
+      <ARTryOnModal 
+        isOpen={showARModal}
+        onClose={() => setShowARModal(false)}
+        product={product}
+      />
     </div>
   );
 };
