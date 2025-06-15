@@ -17,6 +17,7 @@ import ProductActions from "@/components/product/ProductActions";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import { Palette } from "lucide-react";
+import StickyAddToCart from "@/components/product/StickyAddToCart";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -26,6 +27,7 @@ const ProductDetail = () => {
   const [showARModal, setShowARModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
+  const [showSticky, setShowSticky] = useState(false);
   const { addToCart, setIsCartOpen } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { addToComparison, isInComparison } = useComparison();
@@ -105,6 +107,29 @@ const ProductDetail = () => {
       </div>
     );
   }
+
+  // Show sticky bar only if not desktop (md) and product is in stock
+  // It is only sticky on small screens; on desktop, users use regular button
+  const [showSticky, setShowSticky] = useState(false);
+
+  // Handle scroll to show sticky bar when default Add to Cart is out of view
+  // Only on mobile
+  // Use effect runs only in the browser
+  import { useEffect, useRef } from "react";
+  const addToCartBtnRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!addToCartBtnRef.current) return;
+      const rect = addToCartBtnRef.current.getBoundingClientRect();
+      // If bottom of the button is out of viewport (e.g., behind keyboard)
+      setShowSticky(rect.bottom > window.innerHeight || rect.bottom < 0);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
@@ -221,24 +246,31 @@ const ProductDetail = () => {
               description={currentProduct.description}
               features={currentProduct.features}
             />
-
-            <ProductActions
-              sizes={currentProduct.sizes}
-              selectedSize={selectedSize}
-              onSizeSelect={setSelectedSize}
-              quantity={quantity}
-              onQuantityChange={handleQuantityChange}
-              onAddToCart={handleAddToCart}
-              onTryOn={handleTryOn}
-              onAddToComparison={handleAddToComparison}
-              onWishlistToggle={handleWishlistToggle}
-              onShowSizeGuide={() => setShowSizeGuide(true)}
-              isInWishlist={isInWishlist(currentProduct.id)}
-              isInComparison={isInComparison(currentProduct.id)}
-              inStock={currentProduct.inStock}
-              price={currentProduct.price}
-            />
-
+            <div>
+              <ProductActions
+                sizes={currentProduct.sizes}
+                selectedSize={selectedSize}
+                onSizeSelect={setSelectedSize}
+                quantity={quantity}
+                onQuantityChange={handleQuantityChange}
+                onAddToCart={handleAddToCart}
+                onTryOn={handleTryOn}
+                onAddToComparison={handleAddToComparison}
+                onWishlistToggle={handleWishlistToggle}
+                onShowSizeGuide={() => setShowSizeGuide(true)}
+                isInWishlist={isInWishlist(currentProduct.id)}
+                isInComparison={isInComparison(currentProduct.id)}
+                inStock={currentProduct.inStock}
+                price={currentProduct.price}
+              />
+              {/* Reference to Add to Cart for sticky logic (small screens) */}
+              <button
+                ref={addToCartBtnRef}
+                style={{ position: "absolute", opacity: 0, pointerEvents: "none", height: 0 }}
+                tabIndex={-1}
+                aria-hidden="true"
+              />
+            </div>
             {/* Customization Button */}
             <div className="pt-4 border-t">
               <Link to={`/customize/${currentProduct.id}`}>
@@ -288,6 +320,17 @@ const ProductDetail = () => {
       <ProductComparison 
         isOpen={showComparison}
         onClose={() => setShowComparison(false)}
+      />
+
+      {/* Sticky Add To Cart (mobile only) */}
+      <StickyAddToCart
+        price={currentProduct.price}
+        quantity={quantity}
+        inStock={currentProduct.inStock}
+        selectedSize={selectedSize}
+        onAddToCart={handleAddToCart}
+        isVisible={showSticky}
+        isDisabled={false}
       />
     </div>
   );
