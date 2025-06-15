@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import ProductInfo from "@/components/product/ProductInfo";
 import ProductActions from "@/components/product/ProductActions";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
+import { Palette } from "lucide-react";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -31,35 +31,37 @@ const ProductDetail = () => {
   const { addToComparison, isInComparison } = useComparison();
 
   // Mock product data - in a real app, this would come from an API
+  const product = {
+    id: 1,
+    name: "Premium Sport Sneakers",
+    price: 129.99,
+    originalPrice: 159.99,
+    images: [
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600&h=600&fit=crop"
+    ],
+    rating: 4.8,
+    reviews: 234,
+    category: "sneakers",
+    brand: "StepStyle Pro",
+    sizes: [8, 9, 10, 11, 12],
+    colors: ["Black", "White", "Red"],
+    isNew: true,
+    isSale: true,
+    description: "Experience ultimate comfort and style with our Premium Sport Sneakers. Featuring advanced cushioning technology and breathable materials, these sneakers are perfect for both athletic activities and casual wear.",
+    features: [
+      "Advanced cushioning technology",
+      "Breathable mesh upper",
+      "Durable rubber outsole",
+      "Lightweight design",
+      "Moisture-wicking lining"
+    ],
+    inStock: true
+  };
+
   const products = [
-    {
-      id: 1,
-      name: "Premium Sport Sneakers",
-      price: 129.99,
-      originalPrice: 159.99,
-      images: [
-        "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&h=600&fit=crop",
-        "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600&h=600&fit=crop"
-      ],
-      rating: 4.8,
-      reviews: 234,
-      category: "sneakers",
-      brand: "StepStyle Pro",
-      sizes: [8, 9, 10, 11, 12],
-      colors: ["Black", "White", "Red"],
-      isNew: true,
-      isSale: true,
-      description: "Experience ultimate comfort and style with our Premium Sport Sneakers. Featuring advanced cushioning technology and breathable materials, these sneakers are perfect for both athletic activities and casual wear.",
-      features: [
-        "Advanced cushioning technology",
-        "Breathable mesh upper",
-        "Durable rubber outsole",
-        "Lightweight design",
-        "Moisture-wicking lining"
-      ],
-      inStock: true
-    },
+    product,
     {
       id: 2,
       name: "Classic Leather Dress Shoes",
@@ -88,9 +90,9 @@ const ProductDetail = () => {
     }
   ];
 
-  const product = products.find(p => p.id === parseInt(id || "1"));
+  const currentProduct = products.find(p => p.id === parseInt(id || "1"));
 
-  if (!product) {
+  if (!currentProduct) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
@@ -124,18 +126,18 @@ const ProductDetail = () => {
 
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.images[0],
+        id: currentProduct.id,
+        name: currentProduct.name,
+        price: currentProduct.price,
+        image: currentProduct.images[0],
         size: selectedSize,
-        brand: product.brand,
+        brand: currentProduct.brand,
       });
     }
 
     toast({
       title: "Added to cart!",
-      description: `${quantity} ${product.name} (Size ${selectedSize}) added to your cart.`,
+      description: `${quantity} ${currentProduct.name} (Size ${selectedSize}) added to your cart.`,
     });
 
     setIsCartOpen(true);
@@ -143,18 +145,18 @@ const ProductDetail = () => {
 
   const handleWishlistToggle = () => {
     const wishlistItem = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.images[0],
-      brand: product.brand,
-      rating: product.rating,
-      reviews: product.reviews,
+      id: currentProduct.id,
+      name: currentProduct.name,
+      price: currentProduct.price,
+      originalPrice: currentProduct.originalPrice,
+      image: currentProduct.images[0],
+      brand: currentProduct.brand,
+      rating: currentProduct.rating,
+      reviews: currentProduct.reviews,
     };
 
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
+    if (isInWishlist(currentProduct.id)) {
+      removeFromWishlist(currentProduct.id);
     } else {
       addToWishlist(wishlistItem);
     }
@@ -170,23 +172,23 @@ const ProductDetail = () => {
 
   const handleAddToComparison = () => {
     const comparisonProduct = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.images[0],
-      rating: product.rating,
-      reviews: product.reviews,
-      brand: product.brand,
-      category: product.category,
-      sizes: product.sizes,
-      colors: product.colors,
+      id: currentProduct.id,
+      name: currentProduct.name,
+      price: currentProduct.price,
+      originalPrice: currentProduct.originalPrice,
+      image: currentProduct.images[0],
+      rating: currentProduct.rating,
+      reviews: currentProduct.reviews,
+      brand: currentProduct.brand,
+      category: currentProduct.category,
+      sizes: currentProduct.sizes,
+      colors: currentProduct.colors,
     };
 
     addToComparison(comparisonProduct);
     toast({
       title: "Added to comparison",
-      description: `${product.name} has been added to comparison.`,
+      description: `${currentProduct.name} has been added to comparison.`,
     });
   };
 
@@ -195,34 +197,34 @@ const ProductDetail = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <ProductBreadcrumb productName={product.name} />
+        <ProductBreadcrumb productName={currentProduct.name} />
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <ProductImageGallery
-            images={product.images}
-            productName={product.name}
+            images={currentProduct.images}
+            productName={currentProduct.name}
             selectedImage={selectedImage}
             onImageSelect={setSelectedImage}
-            isNew={product.isNew}
-            isSale={product.isSale}
+            isNew={currentProduct.isNew}
+            isSale={currentProduct.isSale}
           />
 
           {/* Product Info and Actions */}
           <div className="space-y-8">
             <ProductInfo
-              brand={product.brand}
-              name={product.name}
-              rating={product.rating}
-              reviews={product.reviews}
-              price={product.price}
-              originalPrice={product.originalPrice}
-              description={product.description}
-              features={product.features}
+              brand={currentProduct.brand}
+              name={currentProduct.name}
+              rating={currentProduct.rating}
+              reviews={currentProduct.reviews}
+              price={currentProduct.price}
+              originalPrice={currentProduct.originalPrice}
+              description={currentProduct.description}
+              features={currentProduct.features}
             />
 
             <ProductActions
-              sizes={product.sizes}
+              sizes={currentProduct.sizes}
               selectedSize={selectedSize}
               onSizeSelect={setSelectedSize}
               quantity={quantity}
@@ -232,26 +234,42 @@ const ProductDetail = () => {
               onAddToComparison={handleAddToComparison}
               onWishlistToggle={handleWishlistToggle}
               onShowSizeGuide={() => setShowSizeGuide(true)}
-              isInWishlist={isInWishlist(product.id)}
-              isInComparison={isInComparison(product.id)}
-              inStock={product.inStock}
-              price={product.price}
+              isInWishlist={isInWishlist(currentProduct.id)}
+              isInComparison={isInComparison(currentProduct.id)}
+              inStock={currentProduct.inStock}
+              price={currentProduct.price}
             />
+
+            {/* Customization Button */}
+            <div className="pt-4 border-t">
+              <Link to={`/customize/${currentProduct.id}`}>
+                <Button 
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                  size="lg"
+                >
+                  <Palette className="h-5 w-5 mr-2" />
+                  Customize This Shoe
+                </Button>
+              </Link>
+              <p className="text-sm text-gray-600 text-center mt-2">
+                Make it yours with personalized colors, materials, and text
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Reviews Section */}
         <div className="mt-16">
           <ReviewSystem 
-            productId={product.id}
-            productName={product.name}
-            averageRating={product.rating}
-            totalReviews={product.reviews}
+            productId={currentProduct.id}
+            productName={currentProduct.name}
+            averageRating={currentProduct.rating}
+            totalReviews={currentProduct.reviews}
           />
         </div>
 
         {/* Related Products */}
-        <RelatedProducts products={products} currentProductId={product.id} />
+        <RelatedProducts products={products} currentProductId={currentProduct.id} />
       </div>
 
       <Footer />
@@ -260,7 +278,7 @@ const ProductDetail = () => {
       <ARTryOnModal 
         isOpen={showARModal}
         onClose={() => setShowARModal(false)}
-        product={product}
+        product={currentProduct}
       />
 
       <SizeGuide 

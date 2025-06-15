@@ -17,6 +17,7 @@ import ARTryOn from "@/pages/ARTryOn";
 import Auth from "@/pages/Auth";
 import Profile from "@/pages/Profile";
 import Orders from "@/pages/Orders";
+import Customize from "@/pages/Customize";
 import NotFound from "@/pages/NotFound";
 import ComparisonBar from "@/components/ComparisonBar";
 import "./App.css";
@@ -37,6 +38,7 @@ function App() {
                       <Route path="/" element={<Index />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/product/:id" element={<ProductDetail />} />
+                      <Route path="/customize/:id" element={<Customize />} />
                       <Route path="/about" element={<About />} />
                       <Route path="/contact" element={<Contact />} />
                       <Route path="/wishlist" element={<Wishlist />} />
