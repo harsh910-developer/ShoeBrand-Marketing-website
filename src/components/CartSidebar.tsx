@@ -1,20 +1,23 @@
-
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ShoppingCart, Plus, Minus, X, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 const CartSidebar = () => {
-  const { 
-    items, 
-    removeFromCart, 
-    updateQuantity, 
-    clearCart, 
-    getTotalItems, 
+  const {
+    items,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getTotalItems,
     getTotalPrice,
     isCartOpen,
     setIsCartOpen,
-    isLoading
+    isLoading,
+    savedItems,
+    saveForLater,
+    moveToCart,
+    removeSavedItem
   } = useCart();
 
   const totalItems = getTotalItems();
@@ -49,14 +52,14 @@ const CartSidebar = () => {
             )}
           </SheetTitle>
         </SheetHeader>
-        
+
         <div className="mt-6 space-y-4">
           {isLoading ? (
             <div className="text-center py-8">
               <Loader2 className="h-8 w-8 mx-auto text-gray-400 animate-spin mb-4" />
               <p className="text-gray-500">Loading your cart...</p>
             </div>
-          ) : items.length === 0 ? (
+          ) : items.length === 0 && savedItems.length === 0 ? (
             <div className="text-center py-8">
               <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500">Your cart is empty</p>
@@ -104,11 +107,46 @@ const CartSidebar = () => {
                       >
                         <X className="h-3 w-3" />
                       </Button>
+                      {/* NEW: Save for Later */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-blue-500"
+                        onClick={() => saveForLater(item)}
+                      >
+                        Save for Later
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
-              
+
+              {/* New: Saved for Later section */}
+              {savedItems.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-md font-semibold text-gray-800 mb-2">Saved for Later</h4>
+                  <div className="space-y-2">
+                    {savedItems.map((item) => (
+                      <div key={`${item.id}-${item.size}`} className="flex items-center space-x-4 p-3 border rounded-md bg-gray-50">
+                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-xs truncate">{item.name}</div>
+                          <div className="text-xs text-gray-500">{item.brand}</div>
+                          <div className="text-xs text-gray-500">Size: {item.size}</div>
+                          <div className="text-xs text-red-500 font-bold">${item.price}</div>
+                        </div>
+                        <Button size="sm" variant="outline" onClick={() => moveToCart(item)}>
+                          Move to Cart
+                        </Button>
+                        <Button size="icon" variant="ghost" onClick={() => removeSavedItem(item.id, item.size)} className="text-red-400">
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="border-t pt-4 space-y-4">
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total: ${totalPrice.toFixed(2)}</span>

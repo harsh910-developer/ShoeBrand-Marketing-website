@@ -10,6 +10,15 @@ export interface CartItem {
   brand: string;
 }
 
+export interface SavedItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  size: string;
+  brand: string;
+}
+
 interface CartContextType {
   items: CartItem[];
   addToCart: (product: Omit<CartItem, 'quantity'>) => void;
@@ -21,12 +30,17 @@ interface CartContextType {
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
   isLoading: boolean;
+  savedItems: SavedItem[];
+  saveForLater: (item: CartItem) => void;
+  moveToCart: (item: SavedItem) => void;
+  removeSavedItem: (id: number, size: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [savedItems, setSavedItems] = useState<SavedItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -67,6 +81,26 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
   }, [items, isLoading]);
+
+  // Load saved items from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('stepstyle-saved');
+      if (saved) {
+        setSavedItems(JSON.parse(saved));
+      }
+    } catch (e) {
+      localStorage.removeItem('stepstyle-saved');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      try {
+        localStorage.setItem('stepstyle-saved', JSON.stringify(savedItems));
+      } catch (e) { }
+    }
+  }, [savedItems, isLoading]);
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {
@@ -119,6 +153,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return items.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  // Save for Later logic
+  const saveForLater = (item: CartItem) => {
+    setItems(prev => prev.filter(i => !(i.id === item.id && i.size === item.size)));
+    setSavedItems(prev => [...prev, { ...item }]);
+  };
+  const moveToCart = (item: SavedItem) => {
+    setSavedItems(prev => prev.filter(i => !(i.id === item.id && i.size === item.size)));
+    // If already in cart, increase quantity
+    setItems(prevItems => {
+      const exists = prevItems.find(i => i.id === item.id && i.size === item.size);
+      if (exists) return prevItems.map(i =>
+        i.id === item.id && i.size === item.size
+          ? { ...i, quantity: i.quantity + 1 }
+          : i
+      );
+      return [...prevItems, { ...item, quantity: 1 }];
+    });
+  };
+  const removeSavedItem = (id: number, size: string) => {
+    setSavedItems(prev => prev.filter(i => !(i.id === id && i.size === size)));
+  };
+
   return (
     <CartContext.Provider value={{
       items,
@@ -130,7 +186,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       getTotalPrice,
       isCartOpen,
       setIsCartOpen,
-      isLoading
+      isLoading,
+      savedItems,
+      saveForLater,
+      moveToCart,
+      removeSavedItem
     }}>
       {children}
     </CartContext.Provider>

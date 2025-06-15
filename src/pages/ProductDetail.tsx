@@ -28,7 +28,7 @@ const ProductDetail = () => {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addToCart, setIsCartOpen, saveForLater } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { addToComparison, isInComparison } = useComparison();
 
@@ -260,6 +260,7 @@ const ProductDetail = () => {
                 isInComparison={isInComparison(currentProduct.id)}
                 inStock={currentProduct.inStock}
                 price={currentProduct.price}
+                onSaveForLater={saveForLater}
               />
               {/* Reference to Add to Cart for sticky logic (small screens) */}
               <button

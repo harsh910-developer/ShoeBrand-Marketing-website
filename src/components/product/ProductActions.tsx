@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Heart, Camera, Ruler, GitCompare, Plus, Minus } from "lucide-react";
 
@@ -17,6 +16,7 @@ interface ProductActionsProps {
   isInComparison: boolean;
   inStock: boolean;
   price: number;
+  onSaveForLater?: (item: any) => void;
 }
 
 const ProductActions = ({
@@ -33,7 +33,8 @@ const ProductActions = ({
   isInWishlist,
   isInComparison,
   inStock,
-  price
+  price,
+  onSaveForLater
 }: ProductActionsProps) => {
   return (
     <div className="space-y-6">
@@ -101,7 +102,24 @@ const ProductActions = ({
           <ShoppingCart className="h-5 w-5 mr-2" />
           Add to Cart - ${(price * quantity).toFixed(2)}
         </Button>
-        
+        {/* NEW: Save for Later Button (only show if size selected & not in cart) */}
+        {onSaveForLater && selectedSize && (
+          <Button
+            size="lg"
+            variant="outline"
+            className="w-full border-blue-500 text-blue-500"
+            onClick={() => onSaveForLater({
+              id: null, // Will pass current product details from parent in future step
+              name: null,
+              price: null,
+              image: null,
+              size: selectedSize,
+              brand: null,
+            })}
+          >
+            Save for Later
+          </Button>
+        )}
         <div className="grid grid-cols-2 gap-3">
           <Button 
             size="lg" 
