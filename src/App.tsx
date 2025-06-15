@@ -16,6 +16,7 @@ import Wishlist from "@/pages/Wishlist";
 import ARTryOn from "@/pages/ARTryOn";
 import Auth from "@/pages/Auth";
 import Profile from "@/pages/Profile";
+import Orders from "@/pages/Orders";
 import NotFound from "@/pages/NotFound";
 import ComparisonBar from "@/components/ComparisonBar";
 import "./App.css";
@@ -42,6 +43,7 @@ function App() {
                       <Route path="/ar-try-on" element={<ARTryOn />} />
                       <Route path="/auth" element={<Auth />} />
                       <Route path="/profile" element={<Profile />} />
+                      <Route path="/orders" element={<Orders />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                     <ComparisonBar />

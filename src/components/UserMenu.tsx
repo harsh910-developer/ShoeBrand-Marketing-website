@@ -74,9 +74,11 @@ const UserMenu = () => {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Package className="mr-2 h-4 w-4" />
-          <span>Orders</span>
+        <DropdownMenuItem asChild>
+          <Link to="/orders" className="cursor-pointer">
+            <Package className="mr-2 h-4 w-4" />
+            <span>Orders</span>
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Settings className="mr-2 h-4 w-4" />
