@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,13 +7,16 @@ import { Heart, Menu, X, Search, ShoppingBag } from "lucide-react";
 import { useSearch } from "@/contexts/SearchContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import CartSidebar from "./CartSidebar";
+import UserMenu from "./UserMenu";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { searchQuery, setSearchQuery } = useSearch();
   const { wishlistCount } = useWishlist();
   const { items } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const navigation = [
@@ -105,6 +109,9 @@ const Header = () => {
               )}
             </div>
 
+            {/* User Menu or Sign In Button */}
+            <UserMenu />
+
             {/* Mobile menu button */}
             <Button
               variant="ghost"
@@ -159,6 +166,16 @@ const Header = () => {
                   </Badge>
                 )}
               </Link>
+
+              {!user && (
+                <Link
+                  to="/auth"
+                  className="text-gray-700 hover:text-red-500 font-medium py-3 px-4 rounded-lg transition-all duration-300 hover:bg-gray-50"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+              )}
             </nav>
           </div>
         )}
