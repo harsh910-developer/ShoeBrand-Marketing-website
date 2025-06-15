@@ -23,6 +23,9 @@ const Customize = () => {
     description: "Create your perfect pair with our advanced customization system"
   };
 
+  // You can later implement size selection or customization forms
+  const defaultSize = "10"; // placeholder (you could make this dynamic in future)
+
   const handleAddToCart = (customization: any, price: number) => {
     addToCart({
       id: product.id,
@@ -30,14 +33,14 @@ const Customize = () => {
       price: price,
       image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
       brand: product.brand,
-      customization
+      size: defaultSize // use a selected size from form in future
     });
+    // Optionally could show toast or open cart
   };
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
       <div className="container mx-auto px-4 py-8">
         {/* Navigation */}
         <div className="mb-6">
@@ -49,7 +52,6 @@ const Customize = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Product
           </Button>
-          
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-2">Customize Your Shoes</h1>
             <p className="text-gray-600 text-lg">
@@ -57,7 +59,6 @@ const Customize = () => {
             </p>
           </div>
         </div>
-
         {/* Customizer */}
         <ShoeCustomizer
           productId={product.id}
@@ -66,12 +67,10 @@ const Customize = () => {
           onAddToCart={handleAddToCart}
         />
 
-        {/* Mobile App Promotion */}
         <div className="mt-16">
           <MobileAppPromo />
         </div>
       </div>
-
       <Footer />
     </div>
   );
