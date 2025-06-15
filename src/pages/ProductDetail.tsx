@@ -18,6 +18,7 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import { Palette } from "lucide-react";
 import StickyAddToCart from "@/components/product/StickyAddToCart";
+import { useEffect, useRef } from "react";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -110,12 +111,10 @@ const ProductDetail = () => {
 
   // Show sticky bar only if not desktop (md) and product is in stock
   // It is only sticky on small screens; on desktop, users use regular button
-  const [showSticky, setShowSticky] = useState(false);
 
   // Handle scroll to show sticky bar when default Add to Cart is out of view
   // Only on mobile
   // Use effect runs only in the browser
-  import { useEffect, useRef } from "react";
   const addToCartBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
