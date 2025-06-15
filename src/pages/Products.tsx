@@ -249,6 +249,28 @@ const Products = () => {
                         {product.isSale && (
                           <Badge className="absolute top-2 right-2 bg-red-500">SALE</Badge>
                         )}
+                        {/* Quick actions on hover overlay */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/10">
+                          <div className="w-full flex gap-2 mb-2 justify-center">
+                            <Button 
+                              size="sm"
+                              className="bg-red-500 hover:bg-red-600 text-white"
+                              onClick={e => { e.preventDefault(); }}
+                            >
+                              Add to Cart
+                            </Button>
+                            <Button 
+                              asChild
+                              size="sm"
+                              variant="secondary"
+                              className="hover:bg-slate-100"
+                            >
+                              <Link to={`/product/${product.id}`}>
+                                View Details
+                              </Link>
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                       <CardContent className="p-4">
                         <p className="text-sm text-gray-500 mb-1">{product.brand}</p>

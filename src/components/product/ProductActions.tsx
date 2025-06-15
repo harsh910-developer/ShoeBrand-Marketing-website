@@ -43,10 +43,10 @@ const ProductActions = ({
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold">Size</h3>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={onShowSizeGuide}
-            className="text-red-500 hover:text-red-600"
+            className="text-red-500 border-red-400 hover:bg-red-50 font-semibold"
           >
             <Ruler className="h-4 w-4 mr-1" />
             Size Guide
@@ -59,7 +59,7 @@ const ProductActions = ({
               variant={selectedSize === size.toString() ? "default" : "outline"}
               size="sm"
               onClick={() => onSizeSelect(size.toString())}
-              className={selectedSize === size.toString() ? "bg-red-500 hover:bg-red-600" : ""}
+              className={selectedSize === size.toString() ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : ""}
             >
               {size}
             </Button>
