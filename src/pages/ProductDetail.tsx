@@ -18,7 +18,6 @@ import RelatedProducts from "@/components/product/RelatedProducts";
 import ProductBreadcrumb from "@/components/product/ProductBreadcrumb";
 import { Palette } from "lucide-react";
 import StickyAddToCart from "@/components/product/StickyAddToCart";
-import { useEffect, useRef } from "react";
 
 const ProductDetail = () => {
   const { id } = useParams();
