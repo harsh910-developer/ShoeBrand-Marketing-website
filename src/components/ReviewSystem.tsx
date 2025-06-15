@@ -88,6 +88,14 @@ const ReviewSystem: React.FC<ReviewSystemProps> = ({
     );
   };
 
+  // Calculate actual stats from reviews if not provided
+  const actualTotalReviews = totalReviews || reviews.length;
+  const actualAverageRating = averageRating || (
+    reviews.length > 0 
+      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+      : 0
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-4">

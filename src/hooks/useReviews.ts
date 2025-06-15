@@ -16,6 +16,10 @@ export interface Review {
   helpful_votes: number;
   created_at: string;
   updated_at: string;
+  profiles?: {
+    first_name?: string;
+    last_name?: string;
+  };
 }
 
 export const useReviews = (productId?: number) => {
@@ -29,7 +33,13 @@ export const useReviews = (productId?: number) => {
       
       const { data, error } = await supabase
         .from('reviews')
-        .select('*')
+        .select(`
+          *,
+          profiles:user_id (
+            first_name,
+            last_name
+          )
+        `)
         .eq('product_id', productId)
         .order('created_at', { ascending: false });
 
@@ -147,6 +157,6 @@ export const useReviews = (productId?: number) => {
     isLoading: reviewsQuery.isLoading || userReviewQuery.isLoading,
     createReview: createReviewMutation.mutate,
     updateReview: updateReviewMutation.mutate,
-    isSubmitting: createReviewMutation.isPending || updateReviewMutation.isPending,
+    isCreatingReview: createReviewMutation.isPending || updateReviewMutation.isPending,
   };
 };
